@@ -17,47 +17,72 @@ export class GildedRose {
     this.items = items;
   }
 
+  private isLegendary(item: Item): boolean {
+    return item.name == 'Sulfuras, Hand of Ragnaros';
+  }
+
+  private reduceSellIn(item: Item): void {
+    item.sellIn -= 1;
+  }
+
+  private floorAndCapQuality(item: Item): void {
+    if (item.quality > 50) item.quality = 50;
+    if (item.quality < 0) item.quality = 0;
+  }
+
+  private updateDexterityVestQuality(item: Item): void {
+    item.quality -= 1;
+  }
+
+  private updateAgedBrieQuality(item: Item): void {
+    item.quality += 1;
+    if (item.sellIn < 0 && item.quality < 50) item.quality += 1;
+  }
+
+  private updateElixirOfMongooseQuality(item: Item): void {
+    item.quality -= 1;
+  }
+
+  private updateBackstagePassesQuality(item: Item): void {
+    item.quality += 1;
+    if (item.sellIn < 10) item.quality += 1;
+    if (item.sellIn < 5) item.quality += 1;
+    if (item.sellIn < 0) item.quality = 0;
+  }
+
+  private updateConjuredManaCakeQuality(item: Item): void {
+    item.quality -= 1;
+  }
+
   updateQuality() {
     for (let i = 0; i < this.items.length; i++) {
       let useRefactor = true;
       if (useRefactor) {
         var item = this.items[i];
 
-        // Legendary items
-        if (item.name == 'Sulfuras, Hand of Ragnaros') {
+        if (this.isLegendary(item)) {
           continue;
         }
 
-        // Non-legendary
-        item.sellIn -= 1;
+        this.reduceSellIn(item);
       
         if (item.name == '+5 Dexterity Vest') {
-          item.quality -= 1;
+          this.updateDexterityVestQuality(item);
+        }
+        else if (item.name == 'Aged Brie') {
+          this.updateAgedBrieQuality(item);
+        }
+        else if (item.name == 'Elixir of the Mongoose') {
+          this.updateElixirOfMongooseQuality(item);
+        }
+        else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
+          this.updateBackstagePassesQuality(item);
+        }
+        else if (item.name == 'Conjured Mana Cake') {
+          this.updateConjuredManaCakeQuality(item);
         }
 
-        if (item.name == 'Aged Brie') {
-          item.quality += 1;
-          if (item.sellIn < 0 && item.quality < 50) item.quality += 1;
-        }
-
-        if (item.name == 'Elixir of the Mongoose') {
-          item.quality -= 1;
-        }
-
-        if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-          item.quality += 1;
-          if (item.sellIn < 10) item.quality += 1;
-          if (item.sellIn < 5) item.quality += 1;
-          if (item.sellIn < 0) item.quality = 0;
-        }
-
-        if (item.name == 'Conjured Mana Cake') {
-          item.quality -= 1;
-        }
-
-        // Floor/Cap quality
-        if (item.quality > 50) item.quality = 50;
-        if (item.quality < 0) item.quality = 0;
+        this.floorAndCapQuality(item);
       }
       // ORIGINAL
       else {
