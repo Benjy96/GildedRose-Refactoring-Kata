@@ -1,4 +1,4 @@
-import { Item, GildedRose } from '@/gilded-rose';
+import { Item, GildedRose, DexerityVestUpdater } from '@/gilded-rose';
 
 describe('Gilded Rose', () => {
   it('should foo', () => {
@@ -221,3 +221,26 @@ describe('Gilded Rose', () => {
   });
 
 });
+
+describe('Dexterity Vest Updater', () => {
+  it('should reduce Dexterity Vest Quality by 1', () => {
+    // Arrange
+    const items = [
+      new Item("+5 Dexterity Vest", 3, 6)
+    ];
+
+    const expectedItemsResult = [
+      new Item("+5 Dexterity Vest", 3, 5)
+    ];
+
+    const vestUpdater = new DexerityVestUpdater();
+
+    // Act
+    vestUpdater.updateQuality(items[0]);
+
+    // Assert
+    expect(items[0]).toStrictEqual(expectedItemsResult[0]);
+  });
+
+});
+

@@ -10,6 +10,50 @@ export class Item {
   }
 }
 
+export interface ItemUpdater {
+  updateQuality(item: Item): void;
+}
+
+export class DefaultItemUpdater implements ItemUpdater {
+  updateQuality(item: Item): void {
+      
+  }
+}
+
+export class DexerityVestUpdater implements ItemUpdater {
+  updateQuality(item: Item): void {
+    item.quality -= 1;
+  }
+}
+
+export class AgedBrieUpdater implements ItemUpdater {
+  updateQuality(item: Item): void {
+    item.quality += 1;
+    if (item.sellIn < 0 && item.quality < 50) item.quality += 1;
+  }
+}
+
+export class ElixirOfMongooseUpdater implements ItemUpdater {
+  updateQuality(item: Item): void {
+    item.quality -= 1;
+  }
+}
+
+export class BackstagePassesQualityUpdater implements ItemUpdater {
+  updateQuality(item: Item): void {
+    item.quality += 1;
+    if (item.sellIn < 10) item.quality += 1;
+    if (item.sellIn < 5) item.quality += 1;
+    if (item.sellIn < 0) item.quality = 0;
+  }
+}
+
+export class ConjuredManaCakeUpdater implements ItemUpdater {
+  updateQuality(item: Item): void {
+    item.quality -= 1;
+  }
+}
+
 export class GildedRose {
   items: Array<Item>;
 
@@ -17,41 +61,34 @@ export class GildedRose {
     this.items = items;
   }
 
-  private isLegendary(item: Item): boolean {
+  isLegendary(item: Item): boolean {
     return item.name == 'Sulfuras, Hand of Ragnaros';
   }
 
-  private reduceSellIn(item: Item): void {
+  protected reduceSellIn(item: Item): void {
     item.sellIn -= 1;
   }
 
-  private floorAndCapQuality(item: Item): void {
+  protected floorAndCapQuality(item: Item): void {
     if (item.quality > 50) item.quality = 50;
     if (item.quality < 0) item.quality = 0;
   }
 
-  private updateDexterityVestQuality(item: Item): void {
-    item.quality -= 1;
-  }
-
-  private updateAgedBrieQuality(item: Item): void {
-    item.quality += 1;
-    if (item.sellIn < 0 && item.quality < 50) item.quality += 1;
-  }
-
-  private updateElixirOfMongooseQuality(item: Item): void {
-    item.quality -= 1;
-  }
-
-  private updateBackstagePassesQuality(item: Item): void {
-    item.quality += 1;
-    if (item.sellIn < 10) item.quality += 1;
-    if (item.sellIn < 5) item.quality += 1;
-    if (item.sellIn < 0) item.quality = 0;
-  }
-
-  private updateConjuredManaCakeQuality(item: Item): void {
-    item.quality -= 1;
+  protected getUpdater(item: Item): ItemUpdater {
+    switch (item.name) {
+      case '+5 Dexterity Vest':
+        return new DexerityVestUpdater();
+      case 'Aged Brie':
+        return new AgedBrieUpdater();
+      case 'Elixir of the Mongoose':
+        return new ElixirOfMongooseUpdater();
+      case 'Backstage passes to a TAFKAL80ETC concert':
+        return new BackstagePassesQualityUpdater();
+      case 'Conjured Mana Cake':
+        return new ConjuredManaCakeUpdater();
+      default:
+        return new DefaultItemUpdater();
+    }
   }
 
   updateQuality() {
@@ -65,23 +102,10 @@ export class GildedRose {
         }
 
         this.reduceSellIn(item);
-      
-        if (item.name == '+5 Dexterity Vest') {
-          this.updateDexterityVestQuality(item);
-        }
-        else if (item.name == 'Aged Brie') {
-          this.updateAgedBrieQuality(item);
-        }
-        else if (item.name == 'Elixir of the Mongoose') {
-          this.updateElixirOfMongooseQuality(item);
-        }
-        else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-          this.updateBackstagePassesQuality(item);
-        }
-        else if (item.name == 'Conjured Mana Cake') {
-          this.updateConjuredManaCakeQuality(item);
-        }
 
+        const updater = this.getUpdater(item);
+        updater.updateQuality(item);
+    
         this.floorAndCapQuality(item);
       }
       // ORIGINAL
