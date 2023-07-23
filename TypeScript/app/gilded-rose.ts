@@ -39,7 +39,7 @@ export class ElixirOfMongooseUpdater implements ItemUpdater {
   }
 }
 
-export class BackstagePassesQualityUpdater implements ItemUpdater {
+export class BackstagePassesUpdater implements ItemUpdater {
   updateQuality(item: Item): void {
     item.quality += 1;
     if (item.sellIn < 10) item.quality += 1;
@@ -83,7 +83,7 @@ export class GildedRose {
       case 'Elixir of the Mongoose':
         return new ElixirOfMongooseUpdater();
       case 'Backstage passes to a TAFKAL80ETC concert':
-        return new BackstagePassesQualityUpdater();
+        return new BackstagePassesUpdater();
       case 'Conjured Mana Cake':
         return new ConjuredManaCakeUpdater();
       default:
